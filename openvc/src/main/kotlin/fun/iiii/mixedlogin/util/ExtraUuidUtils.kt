@@ -14,7 +14,7 @@ object ExtraUuidUtils {
         }
         return when {
             holderUUID == getNormalOfflineUUID(name) -> OfflineUUIDType.OFFLINE
-            holderUUID == PCL2UUIDUtil.getUUID(name) -> OfflineUUIDType.PCL
+            PCL2UUIDUtil.isPCL2UUID(holderUUID,name) -> OfflineUUIDType.PCL
             holderUUID == none -> OfflineUUIDType.NONE
             else -> OfflineUUIDType.UNKNOWN
         }
