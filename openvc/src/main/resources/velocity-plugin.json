@@ -1,0 +1,8 @@
+{
+  "id":"mixedlogin",
+  "name":"MixedLogin",
+  "version":"0.0.1",
+  "authors":["ksqeib"],
+  "dependencies":[{"id":"mckotlin-velocity","optional":false}],
+  "main":"fun.iiii.mixedlogin.MixedLoginMain"
+}
