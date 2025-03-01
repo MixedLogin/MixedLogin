@@ -7,27 +7,21 @@ object PCL2UUIDUtil {
         return UUID.fromString(toUUID(getStringUUID(name)))
     }
 
-    private fun getStringUUID(name: String): String {
-        val partA = fillZeroTo16(Integer.toHexString(name.length))
-        val partB = fillZeroTo16(java.lang.Long.toHexString(hash(name)))
-        val full = partA + partB
-        println("partA: $partA")
-        println("partB: $partB")
-        return insertInfo(full)
+    private fun getStringUUID(name: String): String = buildString {
+        append(fillZeroTo16(Integer.toHexString(name.length)))
+        append(fillZeroTo16(java.lang.Long.toHexString(hash(name))))
+    }.let(::insertInfo)
+
+    private fun insertInfo(originalUUID: String): String = buildString {
+        append(originalUUID.substring(0, 12))
+        append('3')
+        append(originalUUID.substring(13, 16))
+        append('9')
+        append(originalUUID.substring(17, 32))
     }
 
-    private fun insertInfo(originalUUID: String): String {
-        return originalUUID.substring(0, 12) + "3" +
-                originalUUID.substring(13, 16) + "9" +
-                originalUUID.substring(17, 32)
-    }
-
-    private fun fillZeroTo16(str: String): String {
-        if (str.length > 16) {
-            return str.substring(0, 16)
-        }
-        return "0".repeat(16 - str.length) + str
-    }
+    private fun fillZeroTo16(str: String): String = 
+        str.take(16).padStart(16, '0')
 
     private fun hash(str: String): Long {
         var hash = 5381L
@@ -37,11 +31,22 @@ object PCL2UUIDUtil {
         return hash xor -0x5670afe4397bfcd1L
     }
 
-    private fun toUUID(no_: String): String {
-        return no_.substring(0, 8) + "-" +
-                no_.substring(8, 12) + "-" +
-                no_.substring(12, 16) + "-" +
-                no_.substring(16, 20) + "-" +
-                no_.substring(20, 32)
+    private fun toUUID(no_: String): String = buildString {
+        append(no_.substring(0, 8))
+        append("-")
+        append(no_.substring(8, 12))
+        append("-") 
+        append(no_.substring(12, 16))
+        append("-")
+        append(no_.substring(16, 20))
+        append("-")
+        append(no_.substring(20, 32))
+    }
+
+    @JvmStatic
+    fun main(args: Array<String>) {
+//        ksqeib:00000000-0000-3006-998f-555b0138dc4d
+        println("ksqeib:${getUUID("ksqeib")}")
+        println("Diamonds:${getUUID("Diamonds")}")
     }
 } 
