@@ -7,10 +7,10 @@
 高于1.19.1:  
 直接进入即可
 ### 启动器兼容情况
-[√] HMCL  
-[√] PCL  
-[√] Vanilla Launcher  
-[√] Zalith
+- [x] HMCL  
+- [x] PCL  
+- [x] 原版启动器  
+- [x] Zalith
 
 ## 开发计划
 - [x] 基础原理实现

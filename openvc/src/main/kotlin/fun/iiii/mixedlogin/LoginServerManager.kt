@@ -8,8 +8,16 @@ import `fun`.iiii.mixedlogin.yggdrasil.offline.VirtualSubService
 class LoginServerManager {
     private val virtualOfflineService = VirtualOfflineService()
     private val virtualSubService = VirtualSubService()
-    private val offlineYggdrasilServer = VirtualYggdrasilServer(26748, "127.0.0.1", virtualOfflineService)
-    private val subYggdrasilServer = VirtualYggdrasilServer(26749, "127.0.0.1", virtualSubService)
+    private val offlineYggdrasilServer = VirtualYggdrasilServer(
+        MixedLoginMain.getConfig().offlineYggdrasil.port,
+        MixedLoginMain.getConfig().offlineYggdrasil.host,
+        virtualOfflineService
+    )
+    private val subYggdrasilServer = VirtualYggdrasilServer(
+        MixedLoginMain.getConfig().subYggdrasil.port,
+        MixedLoginMain.getConfig().subYggdrasil.host,
+        virtualSubService
+    )
 
     fun start() {
         try {

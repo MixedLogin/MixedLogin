@@ -1,5 +1,6 @@
 package `fun`.iiii.mixedlogin.util.uuid
 
+import `fun`.iiii.mixedlogin.MixedLoginMain
 import java.util.*
 
 object PCL2UUIDUtil {
@@ -123,7 +124,12 @@ object PCL2UUIDUtil {
     }
 
     //    粗略匹配函数
-    fun isPCL2UUID(uuid: UUID, name: String, hashMatch: Boolean = false, slimMatch: Boolean = true): Boolean {
+    fun isPCL2UUID(
+        uuid: UUID,
+        name: String,
+        hashMatch: Boolean = MixedLoginMain.getConfig().uuidMatch.pcl2.hash,
+        slimMatch: Boolean = MixedLoginMain.getConfig().uuidMatch.pcl2.slim
+    ): Boolean {
         if (!hashMatch) return hasPCL2Info(uuid, name)
 
         val strRemove = uuid.toString().replace("-", "")
