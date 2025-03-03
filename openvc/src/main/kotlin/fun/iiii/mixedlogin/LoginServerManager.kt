@@ -30,8 +30,9 @@ class LoginServerManager {
 
     fun shouldOfflineHost(hostName: String): Boolean {
         if (hostName.isEmpty()) return false
-        if (hostName.startsWith("offline")) return true
-        if (hostName.startsWith("o-")) return true
+        MixedLoginMain.getConfig().hostMatch.start.forEach {
+            if (hostName.startsWith(it)) return true
+        }
         return false
     }
 

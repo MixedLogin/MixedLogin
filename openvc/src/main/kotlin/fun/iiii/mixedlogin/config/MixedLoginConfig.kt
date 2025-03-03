@@ -14,6 +14,9 @@ class MixedLoginConfig {
     @Comment("UUID匹配设定")
     val uuidMatch = UUIDMatch()
 
+    @Comment("Host匹配设定")
+    val hostMatch = HostMatch()
+
     @ConfigSerializable
     class SubYggdrasil {
         val port = 26749
@@ -48,6 +51,11 @@ class MixedLoginConfig {
 
         @Comment("关于PCL2启动器匹配的细节设定")
         val pcl2 = PCL2()
+    }
+
+    @ConfigSerializable
+    class HostMatch {
+        val start = listOf("offline", "o-")
     }
 
 }
