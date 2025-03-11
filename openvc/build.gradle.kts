@@ -24,8 +24,11 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.8.9")
     compileOnly("org.apache.logging.log4j:log4j-api:2.14.1")
     compileOnly("net.kyori:adventure-text-serializer-gson:4.19.0")
+    compileOnly("net.kyori:adventure-text-logger-slf4j:4.19.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("com.google.inject:guice:4.2.3")
     compileOnly("com.google.guava:guava:33.4.0-jre")
+    compileOnly(libs.brigadier)
 
     annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
 

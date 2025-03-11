@@ -25,6 +25,7 @@ assertj = "3.27.2"
 
 [libraries]
 
+brigadier = "com.velocitypowered:velocity-brigadier:1.0.0-SNAPSHOT"
 adventure = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 
 paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }

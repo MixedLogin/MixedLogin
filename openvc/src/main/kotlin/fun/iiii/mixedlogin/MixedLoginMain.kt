@@ -1,6 +1,7 @@
 package `fun`.iiii.mixedlogin
 
 import com.google.inject.Inject
+import com.google.inject.Injector
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.annotation.DataDirectory
@@ -8,6 +9,8 @@ import com.velocitypowered.api.proxy.ProxyServer
 import `fun`.iiii.mixedlogin.command.MixedLoginCommand
 import `fun`.iiii.mixedlogin.config.MixedLoginConfig
 import `fun`.iiii.mixedlogin.listener.EventListener
+import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.kotlin.dataClassFieldDiscoverer
@@ -19,13 +22,15 @@ import java.util.logging.Logger
 class MixedLoginMain @Inject constructor(
     private val server: ProxyServer,
     val logger: Logger,
-    @DataDirectory private val dataDirectory: Path
+    @DataDirectory private val dataDirectory: Path,
+    private val injector: Injector
 ) {
     lateinit var loginServerManager: LoginServerManager
 
     companion object {
         private lateinit var instance: MixedLoginMain
         private lateinit var mixedLoginConfig: MixedLoginConfig
+        private lateinit var authMeVelocityPlugin: AuthMeVelocityPlugin
 
         @JvmStatic
         fun getInstance(): MixedLoginMain = instance
@@ -46,6 +51,10 @@ class MixedLoginMain @Inject constructor(
         proxy.commandManager.register("mixedlogin", MixedLoginCommand())
         proxy.eventManager.register(this, EventListener())
         loginServerManager.start()
+
+        authMeVelocityPlugin = AuthMeVelocityPlugin(server, ComponentLogger.logger(), dataDirectory, injector)
+        authMeVelocityPlugin.onProxyInitialization()
+
     }
 
     val proxy: ProxyServer
