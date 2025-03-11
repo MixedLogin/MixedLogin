@@ -27,8 +27,8 @@ import java.util.List;
 @SuppressWarnings("FieldMayBeFinal")
 @ConfigSerializable
 public class ProxyConfiguration {
-    @Comment("List of login/registration servers")
-    private List<String> authServers = List.of("auth1", "auth2");
+    @Comment("登入服务器")
+    private List<String> authServers = List.of("login");
     public List<String> authServers() {
         return this.authServers;
     }
@@ -55,17 +55,17 @@ public class ProxyConfiguration {
 
     @ConfigSerializable
     public static class EnsureAuthServer {
-        @Comment("Ensure that the first server to which players connect is an auth server")
-        private boolean ensureAuthServer = false;
+        @Comment("确保玩家连接登入服务器")
+        private boolean ensureAuthServer = true;
         public boolean ensureFirstServerIsAuthServer() {
             return this.ensureAuthServer;
         }
 
         @Comment("""
-            Selection Mode of the player's initial server
-            TO_FIRST | Send to the first valid server configured
-            TO_EMPTIEST_SERVER | Send to the server with the lowest number of players
-            RANDOM | Send to a random server""")
+            玩家初始服务器选择模式
+            TO_FIRST | 发送到第一个配置的服务器
+            TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
+            RANDOM | 发送到随机服务器""")
         private SendMode sendMode = SendMode.RANDOM;
         public SendMode sendMode() {
             return this.sendMode;
@@ -74,31 +74,30 @@ public class ProxyConfiguration {
 
     @ConfigSerializable
     public static class SendOnLogin {
-        @Comment("Send logged in players to another server?")
-        private boolean sendOnLogin = false;
+        @Comment("发送登入的玩家到其他服务器")
+        private boolean sendOnLogin = true;
         public boolean sendToServerOnLogin() {
             return this.sendOnLogin;
         }
 
-        @Comment("Require players to have the authmevelocity.send-on-login permission?")
+        @Comment("需要 authmevelocity.send-on-login 权限")
         private boolean requirePermission = false;
         public boolean isRequirePermission() {
             return this.requirePermission;
         }
 
         @Comment("""
-            List of servers to send
-            One of these servers will be chosen at random""")
-        private List<String> teleportServers = List.of("lobby1", "lobby2");
+            登入的玩家会被送到的服务器""")
+        private List<String> teleportServers = List.of("vc");
         public List<String> teleportServers() {
             return this.teleportServers;
         }
 
         @Comment("""
-            Selection Mode of the server to which the player will be sent
-            TO_FIRST | Send to the first valid server configured
-            TO_EMPTIEST_SERVER | Send to the server with the lowest number of players
-            RANDOM | Send to a random server""")
+            玩家初始服务器选择模式
+            TO_FIRST | 发送到第一个配置的服务器
+            TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
+            RANDOM | 发送到随机服务器""")
         private SendMode sendMode = SendMode.RANDOM;
         public SendMode sendMode() {
             return this.sendMode;
@@ -107,16 +106,15 @@ public class ProxyConfiguration {
 
     @ConfigSerializable
     public static class Commands {
-        @Comment("Sets the commands that users who have not yet logged in can execute")
+        @Comment("设定未登入可执行的命令")
         private List<String> allowedCommands = List.of("login", "register", "l", "reg", "email", "captcha");
         public List<String> allowedCommands() {
             return this.allowedCommands;
         }
 
         @Comment("""
-            Sets the message to send in case a non-logged-in player executes an unauthorized command
-            To deactivate the message, leave it empty""")
-        private String blockedMessage = "<red>You cannot execute commands if you are not logged in yet";
+            玩家未登入执行命令的提示""")
+        private String blockedMessage = "<red>登入才能执行命令！";
         public String blockedCommandMessage() {
             return this.blockedMessage;
         }
@@ -124,19 +122,19 @@ public class ProxyConfiguration {
 
     @ConfigSerializable
     public static class Advanced {
-        @Comment("Enable debug mode")
-        private boolean debug = false;
+        @Comment("开启debug模式")
+        private boolean debug = true;
         public boolean debug() {
             return this.debug;
         }
     
-        @Comment("Attempts to get a valid server in SendMode Random")
+        @Comment("随机传送尝试次数")
         private int randomAttempts = 5;
         public int randomAttempts() {
             return this.randomAttempts;
         }
 
-        @Comment("Skip login for online player")
+        @Comment("跳过皮肤站/正版玩家的登入")
         private boolean skinOnlineLogin = true;
         public boolean skinOnlineLogin() {
             return this.skinOnlineLogin;

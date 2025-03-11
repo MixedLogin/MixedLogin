@@ -28,48 +28,48 @@ import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 
 public final class PreConnectListener implements Listener<ServerPreConnectEvent> {
-    @Inject
-    private AuthMeVelocityPlugin plugin;
-    @Inject
-    private EventManager eventManager;
-    @Inject
-    private MixedLoginMain mixedLoginMain;
+  @Inject
+  private AuthMeVelocityPlugin plugin;
+  @Inject
+  private EventManager eventManager;
+  @Inject
+  private MixedLoginMain mixedLoginMain;
 
-    @Override
-    public void register() {
-        eventManager.register(mixedLoginMain, ServerPreConnectEvent.class, this);
-    }
+  @Override
+  public void register() {
+    eventManager.register(mixedLoginMain, ServerPreConnectEvent.class, this);
+  }
 
-    @Override
-    public EventTask executeAsync(final ServerPreConnectEvent event) {
-        return EventTask.withContinuation(continuation -> {
-            final ProxyConfiguration config = plugin.config().get();
-            if(config.advanced().skinOnlineLogin()&&event.getPlayer().isOnlineMode()){
-                plugin.addPlayer(event.getPlayer());
-                plugin.logDebug(() -> "ServerPreConnectEvent | Player " + event.getPlayer().getUsername() + " is online");
-                continuation.resume();
-                return;
-            }
-            if (plugin.isLogged(event.getPlayer())) {
-                plugin.logDebug(() -> "ServerPreConnectEvent | Player " + event.getPlayer().getUsername() + " is already logged");
-                continuation.resume();
-                return;
-            }
+  @Override
+  public EventTask executeAsync(final ServerPreConnectEvent event) {
+    return EventTask.withContinuation(continuation -> {
+      final ProxyConfiguration config = plugin.config().get();
+      if (config.advanced().skinOnlineLogin() && event.getPlayer().isOnlineMode()) {
+        plugin.addPlayer(event.getPlayer());
+        plugin.logDebug(() -> "ServerPreConnectEvent | Player " + event.getPlayer().getUsername() + " is online");
+        continuation.resume();
+        return;
+      }
+      if (plugin.isLogged(event.getPlayer())) {
+        plugin.logDebug(() -> "ServerPreConnectEvent | Player " + event.getPlayer().getUsername() + " is already logged");
+        continuation.resume();
+        return;
+      }
 
-            final RegisteredServer server = event.getResult().getServer().orElse(null);
-            if (server == null) {
-                plugin.logDebug(() -> "ServerPreConnectEvent | " + event.getPlayer().getUsername() + " | Null Server");
-                continuation.resume();
-                return;
-            }
-            // this should be present, "event.getResult().isAllowed()" is the "isPresent" check
-            if (!plugin.isAuthServer(server)) {
-                plugin.logDebug("ServerPreConnectEvent | Server "+server.getServerInfo().getName()+" is not an auth server");
-                event.setResult(ServerPreConnectEvent.ServerResult.denied());
-            } else {
-                plugin.logDebug("ServerPreConnectEvent | Server "+server.getServerInfo().getName()+" is an auth server");
-            }
-            continuation.resume();
-        });
-    }
+      final RegisteredServer server = event.getResult().getServer().orElse(null);
+      if (server == null) {
+        plugin.logDebug(() -> "ServerPreConnectEvent | " + event.getPlayer().getUsername() + " | Null Server");
+        continuation.resume();
+        return;
+      }
+      // this should be present, "event.getResult().isAllowed()" is the "isPresent" check
+      if (!plugin.isAuthServer(server)) {
+        plugin.logDebug("ServerPreConnectEvent | Server " + server.getServerInfo().getName() + " is not an auth server");
+        event.setResult(ServerPreConnectEvent.ServerResult.denied());
+      } else {
+        plugin.logDebug("ServerPreConnectEvent | Server " + server.getServerInfo().getName() + " is an auth server");
+      }
+      continuation.resume();
+    });
+  }
 }

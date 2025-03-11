@@ -11,12 +11,6 @@ import java.util.UUID
 
 class EventListener {
     @Subscribe
-    fun onChoose(event: PlayerChooseInitialServerEvent) {
-        // 判断是否为离线，离线的话则锁定服务器
-        MixedLoginMain.getInstance().logger.info("触发选择服务器事件 玩家: ${event.player.username}")
-    }
-
-    @Subscribe
     fun onBackendLogin(event: BackendEncryptRequestEvent) {
         MixedLoginMain.getInstance().loginServerManager.startSubRequest(event.serverId, event.gameProfile)
         event.isSuccess = true

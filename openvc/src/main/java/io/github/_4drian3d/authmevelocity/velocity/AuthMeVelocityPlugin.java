@@ -110,7 +110,6 @@ public final class AuthMeVelocityPlugin implements AuthMeVelocityAPI {
   }
 
   public void sendInfoMessage() {
-    logger.info(miniMessage().deserialize(" <gray>--- <gradient:aqua:dark_aqua>AuthMeVelocity</gradient> ---"));
     logger.info(miniMessage().deserialize("<gray>AuthServers: <green>" + config.get().authServers()));
     if (config.get().sendOnLogin().sendToServerOnLogin()) {
       logger.info(miniMessage().deserialize(

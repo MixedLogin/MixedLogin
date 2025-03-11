@@ -30,54 +30,60 @@ import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.utils.AuthMeUtils;
 import io.github._4drian3d.authmevelocity.velocity.utils.Pair;
+import java.util.Optional;
 import org.slf4j.Logger;
 
-import java.util.Optional;
-
 public final class InitialServerListener implements Listener<PlayerChooseInitialServerEvent> {
-    @Inject
-    private AuthMeVelocityPlugin plugin;
-    @Inject
-    private EventManager eventManager;
-    @Inject
-    private ProxyServer proxy;
-    @Inject
-    private Logger logger;
-    @Inject
-    private MixedLoginMain mixedLoginMain;
+  @Inject
+  private AuthMeVelocityPlugin plugin;
+  @Inject
+  private EventManager eventManager;
+  @Inject
+  private ProxyServer proxy;
+  @Inject
+  private Logger logger;
+  @Inject
+  private MixedLoginMain mixedLoginMain;
 
-    @Override
-    public void register() {
-        eventManager.register(mixedLoginMain, PlayerChooseInitialServerEvent.class, PostOrder.LATE, this);
-    }
+  @Override
+  public void register() {
+    eventManager.register(mixedLoginMain, PlayerChooseInitialServerEvent.class, PostOrder.LATE, this);
+  }
 
-    @Override
-    public EventTask executeAsync(final PlayerChooseInitialServerEvent event) {
-        return EventTask.withContinuation(continuation -> {
-            final ProxyConfiguration config = plugin.config().get();
-            if (!config.ensureAuthServer().ensureFirstServerIsAuthServer()) {
-                continuation.resume();
-                plugin.logDebug("PlayerChooseInitialServerEvent | Not enabled");
-                return;
-            }
+  @Override
+  public EventTask executeAsync(final PlayerChooseInitialServerEvent event) {
+    return EventTask.withContinuation(continuation -> {
+      final ProxyConfiguration config = plugin.config().get();
+      if (!config.ensureAuthServer().ensureFirstServerIsAuthServer()) {
+        continuation.resume();
+        plugin.logDebug("PlayerChooseInitialServerEvent | Not enabled");
+        return;
+      }
 
-            final Optional<RegisteredServer> optionalSV = event.getInitialServer();
-            if (optionalSV.isPresent() && plugin.isAuthServer(optionalSV.get())) {
-                continuation.resume();
-                plugin.logDebug(() -> "PlayerChooseInitialServerEvent | " + event.getPlayer().getUsername() + " | Player is in auth server");
-                return;
-            }
+      if (config.advanced().skinOnlineLogin() && event.getPlayer().isOnlineMode()) {
+        plugin.addPlayer(event.getPlayer());
+        plugin.logDebug(() -> "PlayerChooseInitialServerEvent | Player " + event.getPlayer().getUsername() + " is online");
+        continuation.resume();
+        return;
+      }
 
-            final Pair<RegisteredServer> server = AuthMeUtils.serverToSend(
-                    config.ensureAuthServer().sendMode(), proxy, config.authServers(), config.advanced().randomAttempts());
+      final Optional<RegisteredServer> optionalSV = event.getInitialServer();
+      if (optionalSV.isPresent() && plugin.isAuthServer(optionalSV.get())) {
+        continuation.resume();
+        plugin.logDebug(() -> "PlayerChooseInitialServerEvent | " + event.getPlayer().getUsername() + " | Player is in auth server");
+        return;
+      }
 
-            // Velocity takes over in case the initial server is not present
-            event.setInitialServer(server.object());
-            continuation.resume();
-            if (server.isEmpty()) {
-                plugin.logDebug(() -> "PlayerChooseInitialServerEvent | " + event.getPlayer().getUsername() + " | Null server");
-                logger.error("Cannot send the player {} to an auth server", event.getPlayer().getUsername());
-            }
-        });
-    }
+      final Pair<RegisteredServer> server = AuthMeUtils.serverToSend(
+          config.ensureAuthServer().sendMode(), proxy, config.authServers(), config.advanced().randomAttempts());
+
+      // Velocity takes over in case the initial server is not present
+      event.setInitialServer(server.object());
+      continuation.resume();
+      if (server.isEmpty()) {
+        plugin.logDebug(() -> "PlayerChooseInitialServerEvent | " + event.getPlayer().getUsername() + " | Null server");
+        logger.error("Cannot send the player {} to an auth server", event.getPlayer().getUsername());
+      }
+    });
+  }
 }
