@@ -60,7 +60,7 @@ public final class CommandListener implements Listener<CommandExecuteEvent> {
             if (plugin.isInAuthServer(player)) {
                 plugin.logDebug(() -> "CommandExecuteEvent | Player "+ player.getUsername() +" is in Auth Server");
                 final String command = AuthMeUtils.getFirstArgument(event.getCommand());
-                if (!plugin.config().get().commands().allowedCommands().contains(command)) {
+                if (!plugin.config().commands.allowedCommands.contains(command)) {
                     plugin.logDebug(() -> "CommandExecuteEvent | Player "+ player.getUsername() +" executed an blocked command");
                     sendBlockedMessage(player);
                     event.setResult(CommandExecuteEvent.CommandResult.denied());
@@ -75,7 +75,7 @@ public final class CommandListener implements Listener<CommandExecuteEvent> {
     }
 
     private void sendBlockedMessage(final Player player){
-        final String blockedMessage = plugin.config().get().commands().blockedCommandMessage();
+        final String blockedMessage = plugin.config().commands.blockedMessage;
         if (!blockedMessage.isBlank()){
             player.sendMessage(MiniMessage.miniMessage().deserialize(blockedMessage));
         }

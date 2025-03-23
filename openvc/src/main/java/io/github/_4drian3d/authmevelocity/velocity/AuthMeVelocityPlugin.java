@@ -27,8 +27,7 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import io.github._4drian3d.authmevelocity.common.configuration.ConfigurationContainer;
-import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
+import fun.iiii.mixedlogin.config.MixedLoginConfig;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.listener.connection.DisconnectListener;
 import io.github._4drian3d.authmevelocity.velocity.listener.connection.InitialServerListener;
@@ -38,12 +37,10 @@ import io.github._4drian3d.authmevelocity.velocity.listener.data.PluginMessageLi
 import io.github._4drian3d.authmevelocity.velocity.listener.input.ChatListener;
 import io.github._4drian3d.authmevelocity.velocity.listener.input.CommandListener;
 import io.github._4drian3d.authmevelocity.velocity.listener.input.TabCompleteListener;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
@@ -54,27 +51,25 @@ public final class AuthMeVelocityPlugin{
       = MinecraftChannelIdentifier.create("authmevelocity", "main");
   public static final ChannelIdentifier LEGACY_CHANNEL
       = new LegacyChannelIdentifier("authmevelocity:main");
-  private ConfigurationContainer<ProxyConfiguration> config;
 
   final Set<String> authServers = ConcurrentHashMap.newKeySet();
   final Set<UUID> loggedPlayers = ConcurrentHashMap.newKeySet();
 
   private final ProxyServer proxy;
   private final ComponentLogger logger;
-  private final Path pluginDirectory;
   private final Injector injector;
 
-  public AuthMeVelocityPlugin(ProxyServer proxy, ComponentLogger logger, Path pluginDirectory, Injector injector) {
+  public AuthMeVelocityPlugin(ProxyServer proxy, ComponentLogger logger, Injector injector) {
     this.proxy = proxy;
     this.logger = logger;
-    this.pluginDirectory = pluginDirectory;
     this.injector = injector;
   }
+  
+  private MixedLoginConfig config;
 
-  public void onProxyInitialization() {
+  public void onProxyInitialization(MixedLoginConfig config) {
     try {
-      this.config = ConfigurationContainer.load(pluginDirectory, ProxyConfiguration.class);
-      authServers.addAll(config.get().authServers());
+      authServers.addAll(config.authServers);
     } catch (Exception e) {
       logger.error("Could not load config.conf file", e);
       return;
@@ -104,10 +99,10 @@ public final class AuthMeVelocityPlugin{
   }
 
   public void sendInfoMessage() {
-    logger.info(miniMessage().deserialize("<gray>AuthServers: <green>" + config.get().authServers()));
-    if (config.get().sendOnLogin().sendToServerOnLogin()) {
+    logger.info(miniMessage().deserialize("<gray>AuthServers: <green>" + config.authServers));
+    if (config.sendOnLogin.sendOnLogin) {
       logger.info(miniMessage().deserialize(
-          "<gray>LobbyServers: <green>" + config.get().sendOnLogin().teleportServers()));
+          "<gray>LobbyServers: <green>" + config.sendOnLogin.teleportServers));
     }
   }
 
@@ -116,7 +111,7 @@ public final class AuthMeVelocityPlugin{
     authServers.addAll(servers);
   }
 
-  public ConfigurationContainer<ProxyConfiguration> config() {
+  public MixedLoginConfig config() {
     return this.config;
   }
 
@@ -150,13 +145,13 @@ public final class AuthMeVelocityPlugin{
 
 
   public void logDebug(final String msg) {
-    if (config.get().advanced().debug()) {
+    if (config.advanced.debug) {
       logger.info("[DEBUG] {}", msg);
     }
   }
 
   public void logDebug(final Supplier<String> msg) {
-    if (config.get().advanced().debug()) {
+    if (config.advanced.debug) {
       logger.info("[DEBUG] {}", msg.get());
     }
   }

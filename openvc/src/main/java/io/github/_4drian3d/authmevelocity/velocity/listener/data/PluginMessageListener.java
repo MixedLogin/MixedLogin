@@ -27,8 +27,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import fun.iiii.mixedlogin.MixedLoginMain;
+import fun.iiii.mixedlogin.config.MixedLoginConfig;
 import io.github._4drian3d.authmevelocity.common.MessageType;
-import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
 import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.utils.AuthMeUtils;
@@ -84,7 +84,7 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
                 case LOGIN -> {
                     plugin.logDebug("PluginMessageEvent | Login type");
                     if (player != null && plugin.addPlayer(player)) {
-                        if (plugin.config().get().sendOnLogin().sendToServerOnLogin()) {
+                        if (plugin.config().sendOnLogin.sendOnLogin) {
                             this.createServerConnectionRequest(player, connection);
                         }
                         plugin.logDebug("PluginMessageEvent | Player not null");
@@ -133,10 +133,10 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
     private void createServerConnectionRequest(final Player player, final ServerConnection connection) {
         final RegisteredServer loginServer = player.getCurrentServer().orElse(connection).getServer();
 
-        final ProxyConfiguration config = plugin.config().get();
+        final MixedLoginConfig config = plugin.config();
 
         final Pair<RegisteredServer> toSend = AuthMeUtils.serverToSend(
-                config.sendOnLogin().sendMode(), proxy, config.sendOnLogin().teleportServers(), config.advanced().randomAttempts());
+                config.sendOnLogin.sendMode, proxy, config.sendOnLogin.teleportServers, config.advanced.randomAttempts);
 
         if (toSend.isEmpty()) {
             if (toSend.string() != null) {
@@ -147,7 +147,7 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
             return;
         }
 
-        if (plugin.config().get().sendOnLogin().isRequirePermission() && !player.hasPermission("authmevelocity.send-on-login")) {
+        if (plugin.config().sendOnLogin.requirePermission && !player.hasPermission("authmevelocity.send-on-login")) {
             plugin.logDebug(() -> "PluginMessageEvent # createServerConnectionRequest | The player does not have permission " + player.getUsername());
             return;
         }

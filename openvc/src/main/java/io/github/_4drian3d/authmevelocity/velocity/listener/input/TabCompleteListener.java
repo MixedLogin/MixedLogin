@@ -48,7 +48,7 @@ public class TabCompleteListener implements Listener<TabCompleteEvent> {
             }
 
             final String command = event.getPartialMessage();
-            for (final String allowed : plugin.config().get().commands().allowedCommands()) {
+            for (final String allowed : plugin.config().commands.allowedCommands) {
                 if (allowed.startsWith(command)) {
                     return;
                 }

@@ -1,10 +1,13 @@
 package `fun`.iiii.mixedlogin.config
 
+import io.github._4drian3d.authmevelocity.common.enums.SendMode
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Comment
+import kotlin.jvm.JvmField
 
 @ConfigSerializable
 class MixedLoginConfig {
+
     @Comment("下层服务器yggd服务器配置,非必要勿动")
     val subYggdrasil = SubYggdrasil()
 
@@ -16,6 +19,19 @@ class MixedLoginConfig {
 
     @Comment("Host匹配设定")
     val hostMatch = HostMatch()
+
+    @Comment("登入服务器")
+    @JvmField
+    val authServers = listOf("login")
+
+    @JvmField
+    val sendOnLogin = SendOnLogin()
+    @JvmField
+    val commands = Commands()
+    @JvmField
+    val ensureAuthServer = EnsureAuthServer()
+    @JvmField
+    val advanced = Advanced()
 
     @ConfigSerializable
     class SubYggdrasil {
@@ -58,4 +74,69 @@ class MixedLoginConfig {
         val start = listOf("offline", "o-")
     }
 
+    @ConfigSerializable
+    class EnsureAuthServer {
+        @Comment("确保玩家连接登入服务器")
+        @JvmField
+        val ensureAuthServer = true
+
+        @Comment("""
+            玩家初始服务器选择模式
+            TO_FIRST | 发送到第一个配置的服务器
+            TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
+            RANDOM | 发送到随机服务器
+        """)
+        @JvmField
+        val sendMode = SendMode.RANDOM
+    }
+
+    @ConfigSerializable
+    class SendOnLogin {
+        @Comment("发送登入的玩家到其他服务器")
+        @JvmField
+        val sendOnLogin = true
+
+        @Comment("需要 authmevelocity.send-on-login 权限")
+        @JvmField
+        val requirePermission = false
+
+        @Comment("登入的玩家会被送到的服务器")
+        @JvmField
+        val teleportServers = listOf("vc")
+
+        @Comment("""
+            玩家初始服务器选择模式
+            TO_FIRST | 发送到第一个配置的服务器
+            TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
+            RANDOM | 发送到随机服务器
+        """)
+        @JvmField
+        val sendMode = SendMode.RANDOM
+    }
+
+    @ConfigSerializable
+    class Commands {
+        @Comment("设定未登入可执行的命令")
+        @JvmField
+        val allowedCommands = listOf("login", "register", "l", "reg", "email", "captcha")
+
+        @Comment("玩家未登入执行命令的提示")
+        @JvmField
+        val blockedMessage = "<red>登入才能执行命令！"
+    }
+
+    @ConfigSerializable
+    class Advanced {
+        @Comment("开启debug模式")
+        @JvmField
+        val debug = true
+
+        @Comment("随机传送尝试次数")
+        @JvmField
+        val randomAttempts = 5
+
+        @Comment("跳过皮肤站/正版玩家的登入")
+        @JvmField
+        val skinOnlineLogin = true
+    }
 }

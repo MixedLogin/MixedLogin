@@ -25,7 +25,7 @@ import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import fun.iiii.mixedlogin.MixedLoginMain;
-import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
+import fun.iiii.mixedlogin.config.MixedLoginConfig;
 import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.utils.AuthMeUtils;
@@ -53,14 +53,14 @@ public final class InitialServerListener implements Listener<PlayerChooseInitial
   @Override
   public EventTask executeAsync(final PlayerChooseInitialServerEvent event) {
     return EventTask.withContinuation(continuation -> {
-      final ProxyConfiguration config = plugin.config().get();
-      if (!config.ensureAuthServer().ensureFirstServerIsAuthServer()) {
+      final MixedLoginConfig config = plugin.config();
+      if (!config.ensureAuthServer.ensureAuthServer) {
         continuation.resume();
         plugin.logDebug("PlayerChooseInitialServerEvent | Not enabled");
         return;
       }
 
-      if (config.advanced().skinOnlineLogin() && event.getPlayer().isOnlineMode()) {
+      if (config.advanced.skinOnlineLogin && event.getPlayer().isOnlineMode()) {
         plugin.addPlayer(event.getPlayer());
         plugin.logDebug(() -> "PlayerChooseInitialServerEvent | Player " + event.getPlayer().getUsername() + " is online");
         continuation.resume();
@@ -75,7 +75,7 @@ public final class InitialServerListener implements Listener<PlayerChooseInitial
       }
 
       final Pair<RegisteredServer> server = AuthMeUtils.serverToSend(
-          config.ensureAuthServer().sendMode(), proxy, config.authServers(), config.advanced().randomAttempts());
+          config.ensureAuthServer.sendMode, proxy, config.authServers, config.advanced.randomAttempts);
 
       // Velocity takes over in case the initial server is not present
       event.setInitialServer(server.object());
