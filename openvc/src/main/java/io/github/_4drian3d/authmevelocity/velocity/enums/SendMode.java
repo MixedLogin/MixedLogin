@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github._4drian3d.authmevelocity.common.enums;
+package io.github._4drian3d.authmevelocity.velocity.enums;
 
 public enum SendMode {
     TO_FIRST,

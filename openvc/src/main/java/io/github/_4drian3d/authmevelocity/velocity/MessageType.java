@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github._4drian3d.authmevelocity.common;
+package io.github._4drian3d.authmevelocity.velocity;
 
 public enum MessageType {
     LOGIN, REGISTER, LOGOUT, FORCE_UNREGISTER, UNREGISTER

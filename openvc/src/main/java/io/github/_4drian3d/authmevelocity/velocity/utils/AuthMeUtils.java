@@ -19,7 +19,7 @@ package io.github._4drian3d.authmevelocity.velocity.utils;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import io.github._4drian3d.authmevelocity.common.enums.SendMode;
+import io.github._4drian3d.authmevelocity.velocity.enums.SendMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

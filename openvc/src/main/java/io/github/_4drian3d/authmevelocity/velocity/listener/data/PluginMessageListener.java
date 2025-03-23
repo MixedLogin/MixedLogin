@@ -28,7 +28,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import fun.iiii.mixedlogin.MixedLoginMain;
 import fun.iiii.mixedlogin.config.MixedLoginConfig;
-import io.github._4drian3d.authmevelocity.common.MessageType;
+import io.github._4drian3d.authmevelocity.velocity.MessageType;
 import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.utils.AuthMeUtils;
