@@ -20,16 +20,11 @@ import `fun`.iiii.mixedlogin.listener.data.PluginMessageListener
 import `fun`.iiii.mixedlogin.listener.input.ChatListener
 import `fun`.iiii.mixedlogin.listener.input.CommandListener
 import `fun`.iiii.mixedlogin.listener.input.TabCompleteListener
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger
-import net.kyori.adventure.text.minimessage.MiniMessage
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Supplier
 import java.util.stream.Stream
 
-class AuthMeManager(
-    private val logger: ComponentLogger
-) {
+class AuthMeManager(val plugin: MixedLoginMain) {
     companion object {
         val MODERN_CHANNEL: ChannelIdentifier = MinecraftChannelIdentifier.create("authmevelocity", "main")
         val LEGACY_CHANNEL: ChannelIdentifier = LegacyChannelIdentifier("authmevelocity:main")
@@ -39,13 +34,7 @@ class AuthMeManager(
     private val loggedPlayers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     fun onProxyInitialization(injector: Injector, proxy: ProxyServer) {
-        try {
-            authServers.addAll(MixedLoginMain.getConfig().authServers)
-        } catch (e: Exception) {
-            logger.error("Could not load config.conf file", e)
-            return
-        }
-
+        authServers.addAll(MixedLoginMain.getConfig().authServers)
         proxy.channelRegistrar.register(MODERN_CHANNEL, LEGACY_CHANNEL)
 
         val childInjector = injector.createChildInjector(object : Module {
@@ -53,7 +42,6 @@ class AuthMeManager(
                 binder.bind(AuthMeManager::class.java).toInstance(this@AuthMeManager)
             }
         })
-
 
         Stream.of(
             PluginMessageListener::class.java,
@@ -67,18 +55,9 @@ class AuthMeManager(
         ).map { clazz: Class<out Listener<*>> -> childInjector.getInstance(clazz) }
             .forEach(Listener<*>::register)
 
-        sendInfoMessage()
-    }
-
-    fun sendInfoMessage() {
-        logger.info(MiniMessage.miniMessage().deserialize("<gray>AuthServers: <green>$authServers"))
-        if (MixedLoginMain.getConfig().sendOnLogin.enable) {
-            logger.info(
-                MiniMessage.miniMessage().deserialize(
-                    "<gray>LobbyServers: <green>${MixedLoginMain.getConfig().sendOnLogin.servers}"
-                )
-            )
-        }
+        plugin.logInfo("未登入服务器: $authServers")
+        if (MixedLoginMain.getConfig().sendOnLogin.enable)
+            plugin.logInfo("登入服务器: ${MixedLoginMain.getConfig().sendOnLogin.servers}")
     }
 
     fun isLogged(player: Player): Boolean = loggedPlayers.contains(player.uniqueId)

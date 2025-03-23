@@ -18,11 +18,10 @@ import org.spongepowered.configurate.objectmapping.ObjectMapper
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.function.Supplier
-import java.util.logging.Logger
 
 class MixedLoginMain @Inject constructor(
     private val server: ProxyServer,
-    val logger: Logger,
+    val logger: ComponentLogger,
     @DataDirectory private val dataDirectory: Path,
     private val injector: Injector
 ) {
@@ -53,7 +52,7 @@ class MixedLoginMain @Inject constructor(
         proxy.eventManager.register(this, EventListener())
         loginServerManager.start()
 
-        authMeManager = AuthMeManager(ComponentLogger.logger())
+        authMeManager = AuthMeManager(this)
         authMeManager.onProxyInitialization(injector, server)
 
     }
@@ -92,6 +91,10 @@ class MixedLoginMain @Inject constructor(
         }
     }
 
+
+    fun logInfo(msg: String) {
+        logger.info(msg)
+    }
 
     fun logDebug(msg: String) {
         if (mixedLoginConfig.advanced.debug) {
