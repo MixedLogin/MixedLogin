@@ -84,7 +84,7 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
                 case LOGIN -> {
                     plugin.logDebug("PluginMessageEvent | Login type");
                     if (player != null && plugin.addPlayer(player)) {
-                        if (plugin.config().sendOnLogin.sendOnLogin) {
+                        if (plugin.config().sendOnLogin.enable) {
                             this.createServerConnectionRequest(player, connection);
                         }
                         plugin.logDebug("PluginMessageEvent | Player not null");
@@ -136,7 +136,7 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
         final MixedLoginConfig config = plugin.config();
 
         final Pair<RegisteredServer> toSend = AuthMeUtils.serverToSend(
-                config.sendOnLogin.sendMode, proxy, config.sendOnLogin.teleportServers, config.advanced.randomAttempts);
+                config.sendOnLogin.sendMode, proxy, config.sendOnLogin.servers, config.advanced.randomAttempts);
 
         if (toSend.isEmpty()) {
             if (toSend.string() != null) {

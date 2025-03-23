@@ -44,7 +44,7 @@ public final class PreConnectListener implements Listener<ServerPreConnectEvent>
   public EventTask executeAsync(final ServerPreConnectEvent event) {
     return EventTask.withContinuation(continuation -> {
       final MixedLoginConfig config = plugin.config();
-      if (config.advanced.skinOnlineLogin && event.getPlayer().isOnlineMode()) {
+      if (config.advanced.skipOnlineLogin && event.getPlayer().isOnlineMode()) {
         plugin.addPlayer(event.getPlayer());
         plugin.logDebug(() -> "ServerPreConnectEvent | Player " + event.getPlayer().getUsername() + " is online");
         continuation.resume();

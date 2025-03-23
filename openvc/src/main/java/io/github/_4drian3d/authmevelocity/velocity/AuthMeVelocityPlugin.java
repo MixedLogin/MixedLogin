@@ -100,9 +100,9 @@ public final class AuthMeVelocityPlugin{
 
   public void sendInfoMessage() {
     logger.info(miniMessage().deserialize("<gray>AuthServers: <green>" + config.authServers));
-    if (config.sendOnLogin.sendOnLogin) {
+    if (config.sendOnLogin.enable) {
       logger.info(miniMessage().deserialize(
-          "<gray>LobbyServers: <green>" + config.sendOnLogin.teleportServers));
+          "<gray>LobbyServers: <green>" + config.sendOnLogin.servers));
     }
   }
 

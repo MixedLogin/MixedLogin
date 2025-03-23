@@ -20,19 +20,6 @@ class MixedLoginConfig {
     @Comment("Host匹配设定")
     val hostMatch = HostMatch()
 
-    @Comment("登入服务器")
-    @JvmField
-    val authServers = listOf("login")
-
-    @JvmField
-    val sendOnLogin = SendOnLogin()
-    @JvmField
-    val commands = Commands()
-    @JvmField
-    val ensureAuthServer = EnsureAuthServer()
-    @JvmField
-    val advanced = Advanced()
-
     @ConfigSerializable
     class SubYggdrasil {
         val port = 26749
@@ -74,27 +61,50 @@ class MixedLoginConfig {
         val start = listOf("offline", "o-")
     }
 
-    @ConfigSerializable
-    class EnsureAuthServer {
-        @Comment("确保玩家连接登入服务器")
-        @JvmField
-        val ensureAuthServer = true
+    @Comment("登入服务器")
+    @JvmField
+    val authServers = listOf("login")
 
-        @Comment("""
+    @Comment("登入服务器设定")
+    @JvmField
+    val sendOnLogin = SendOnLogin()
+
+    @Comment("未登入服务器设定")
+    @JvmField
+    val sendNoLogin = SendNoLogin()
+
+    @Comment("登入中命令设定")
+    @JvmField
+    val commands = Commands()
+
+
+    @Comment("高级设定")
+    @JvmField
+    val advanced = Advanced()
+
+    @ConfigSerializable
+    class SendNoLogin {
+        @Comment("确保未登入的玩家玩家连接登入服务器")
+        @JvmField
+        val enable = true
+
+        @Comment(
+            """
             玩家初始服务器选择模式
             TO_FIRST | 发送到第一个配置的服务器
             TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
             RANDOM | 发送到随机服务器
-        """)
+        """
+        )
         @JvmField
         val sendMode = SendMode.RANDOM
     }
 
     @ConfigSerializable
     class SendOnLogin {
-        @Comment("发送登入的玩家到其他服务器")
+        @Comment("登入后的玩家进行服务器加入控制")
         @JvmField
-        val sendOnLogin = true
+        val enable = true
 
         @Comment("需要 authmevelocity.send-on-login 权限")
         @JvmField
@@ -102,14 +112,16 @@ class MixedLoginConfig {
 
         @Comment("登入的玩家会被送到的服务器")
         @JvmField
-        val teleportServers = listOf("vc")
+        val servers = listOf("vc")
 
-        @Comment("""
+        @Comment(
+            """
             玩家初始服务器选择模式
             TO_FIRST | 发送到第一个配置的服务器
             TO_EMPTIEST_SERVER | 发送到玩家最少的服务器
             RANDOM | 发送到随机服务器
-        """)
+        """
+        )
         @JvmField
         val sendMode = SendMode.RANDOM
     }
@@ -137,6 +149,6 @@ class MixedLoginConfig {
 
         @Comment("跳过皮肤站/正版玩家的登入")
         @JvmField
-        val skinOnlineLogin = true
+        val skipOnlineLogin = true
     }
 }

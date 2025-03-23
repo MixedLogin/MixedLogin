@@ -54,13 +54,13 @@ public final class InitialServerListener implements Listener<PlayerChooseInitial
   public EventTask executeAsync(final PlayerChooseInitialServerEvent event) {
     return EventTask.withContinuation(continuation -> {
       final MixedLoginConfig config = plugin.config();
-      if (!config.ensureAuthServer.ensureAuthServer) {
+      if (!config.sendNoLogin.enable) {
         continuation.resume();
         plugin.logDebug("PlayerChooseInitialServerEvent | Not enabled");
         return;
       }
 
-      if (config.advanced.skinOnlineLogin && event.getPlayer().isOnlineMode()) {
+      if (config.advanced.skipOnlineLogin && event.getPlayer().isOnlineMode()) {
         plugin.addPlayer(event.getPlayer());
         plugin.logDebug(() -> "PlayerChooseInitialServerEvent | Player " + event.getPlayer().getUsername() + " is online");
         continuation.resume();
@@ -75,7 +75,7 @@ public final class InitialServerListener implements Listener<PlayerChooseInitial
       }
 
       final Pair<RegisteredServer> server = AuthMeUtils.serverToSend(
-          config.ensureAuthServer.sendMode, proxy, config.authServers, config.advanced.randomAttempts);
+          config.sendNoLogin.sendMode, proxy, config.authServers, config.advanced.randomAttempts);
 
       // Velocity takes over in case the initial server is not present
       event.setInitialServer(server.object());
