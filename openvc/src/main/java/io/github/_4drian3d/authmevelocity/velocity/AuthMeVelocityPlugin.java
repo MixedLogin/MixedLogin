@@ -29,7 +29,6 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import io.github._4drian3d.authmevelocity.common.configuration.ConfigurationContainer;
 import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
-import io.github._4drian3d.authmevelocity.velocity.commands.AuthMeCommand;
 import io.github._4drian3d.authmevelocity.velocity.listener.Listener;
 import io.github._4drian3d.authmevelocity.velocity.listener.connection.DisconnectListener;
 import io.github._4drian3d.authmevelocity.velocity.listener.connection.InitialServerListener;
@@ -100,8 +99,6 @@ public final class AuthMeVelocityPlugin{
             TabCompleteListener.class
         ).map(childInjector::getInstance)
         .forEach(Listener::register);
-
-    childInjector.getInstance(AuthMeCommand.class).register();
 
     this.sendInfoMessage();
   }
