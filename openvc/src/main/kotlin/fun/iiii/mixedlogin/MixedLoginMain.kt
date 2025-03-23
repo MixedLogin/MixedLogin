@@ -9,7 +9,6 @@ import com.velocitypowered.api.proxy.ProxyServer
 import `fun`.iiii.mixedlogin.command.MixedLoginCommand
 import `fun`.iiii.mixedlogin.config.MixedLoginConfig
 import `fun`.iiii.mixedlogin.listener.EventListener
-import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader

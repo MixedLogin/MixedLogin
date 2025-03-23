@@ -1,6 +1,6 @@
 package `fun`.iiii.mixedlogin.config
 
-import io.github._4drian3d.authmevelocity.velocity.enums.SendMode
+import `fun`.iiii.mixedlogin.enums.SendMode
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Comment
 import kotlin.jvm.JvmField
