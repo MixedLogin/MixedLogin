@@ -27,9 +27,6 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import io.github._4drian3d.authmevelocity.api.velocity.AuthMeVelocityAPI;
-import io.github._4drian3d.authmevelocity.api.velocity.event.authserver.AuthServerAddEvent;
-import io.github._4drian3d.authmevelocity.api.velocity.event.authserver.AuthServerRemoveEvent;
 import io.github._4drian3d.authmevelocity.common.configuration.ConfigurationContainer;
 import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
 import io.github._4drian3d.authmevelocity.velocity.commands.AuthMeCommand;
@@ -53,7 +50,7 @@ import java.util.stream.Stream;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
 
-public final class AuthMeVelocityPlugin implements AuthMeVelocityAPI {
+public final class AuthMeVelocityPlugin{
   public static final ChannelIdentifier MODERN_CHANNEL
       = MinecraftChannelIdentifier.create("authmevelocity", "main");
   public static final ChannelIdentifier LEGACY_CHANNEL
@@ -126,70 +123,34 @@ public final class AuthMeVelocityPlugin implements AuthMeVelocityAPI {
     return this.config;
   }
 
-  @Override
   public boolean isLogged(@NotNull Player player) {
     return loggedPlayers.contains(player.getUniqueId());
   }
 
-  @Override
-  public boolean isNotLogged(@NotNull Player player) {
-    return !loggedPlayers.contains(player.getUniqueId());
-  }
-
-  @Override
   public boolean addPlayer(@NotNull Player player) {
     return loggedPlayers.add(player.getUniqueId());
   }
 
-  @Override
   public boolean removePlayer(@NotNull Player player) {
     return loggedPlayers.remove(player.getUniqueId());
   }
 
-  @Override
-  public void removePlayerIf(@NotNull Predicate<Player> predicate) {
-    loggedPlayers.removeIf(uuid -> proxy.getPlayer(uuid).filter(predicate).isPresent());
-  }
-
-  @Override
   public boolean isInAuthServer(@NotNull Player player) {
     return player.getCurrentServer().map(this::isAuthServer).orElse(false);
   }
 
-  @Override
   public boolean isAuthServer(@NotNull RegisteredServer server) {
     return isAuthServer(server.getServerInfo().getName());
   }
 
-  @Override
   public boolean isAuthServer(@NotNull ServerConnection connection) {
     return isAuthServer(connection.getServerInfo().getName());
   }
 
-  @Override
   public boolean isAuthServer(@NotNull String server) {
     return authServers.contains(server);
   }
 
-  @Override
-  public void addAuthServer(@NotNull String server) {
-    authServers.add(server);
-    proxy.getEventManager().fire(new AuthServerAddEvent(server));
-  }
-
-  @Override
-  public void removeAuthServer(@NotNull String server) {
-    authServers.remove(server);
-    proxy.getEventManager().fire(new AuthServerRemoveEvent(server));
-  }
-
-  @Override
-  public void removeAuthServerIf(@NotNull Predicate<String> predicate) {
-    boolean removed = authServers.removeIf(predicate);
-    if (removed) {
-      proxy.getEventManager().fire(new AuthServerRemoveEvent(predicate.toString()));
-    }
-  }
 
   public void logDebug(final String msg) {
     if (config.get().advanced().debug()) {

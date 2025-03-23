@@ -27,7 +27,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import fun.iiii.mixedlogin.MixedLoginMain;
-import io.github._4drian3d.authmevelocity.api.velocity.event.*;
 import io.github._4drian3d.authmevelocity.common.MessageType;
 import io.github._4drian3d.authmevelocity.common.configuration.ProxyConfiguration;
 import io.github._4drian3d.authmevelocity.velocity.AuthMeVelocityPlugin;
@@ -85,7 +84,6 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
                 case LOGIN -> {
                     plugin.logDebug("PluginMessageEvent | Login type");
                     if (player != null && plugin.addPlayer(player)) {
-                        eventManager.fireAndForget(new ProxyLoginEvent(player));
                         if (plugin.config().get().sendOnLogin().sendToServerOnLogin()) {
                             this.createServerConnectionRequest(player, connection);
                         }
@@ -94,15 +92,13 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
                 }
                 case LOGOUT -> {
                     plugin.logDebug("PluginMessageEvent | Logout type");
-                    if (player != null && plugin.removePlayer(player)){
-                        eventManager.fireAndForget(new ProxyLogoutEvent(player));
+                    if (player != null && plugin.removePlayer(player)) {
                         plugin.logDebug(() -> "PluginMessageEvent | Player " + name + " not null");
                     }
                 }
                 case REGISTER -> {
                     plugin.logDebug("PluginMessageEvent | Register");
                     if (player != null) {
-                        eventManager.fireAndForget(new ProxyRegisterEvent(player));
                         plugin.logDebug(() -> "PluginMessageEvent | Player " + name + " not null");
                     }
                 }
@@ -110,11 +106,9 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
                     plugin.logDebug("PluginMessageEvent | Unregister type");
                     if (player != null) {
                         plugin.logDebug(() -> "PluginMessageEvent | Player " + name + " not null");
-                        eventManager.fireAndForget(new ProxyUnregisterEvent(player));
                     }
                 }
                 case FORCE_UNREGISTER -> {
-                    eventManager.fireAndForget(new ProxyForcedUnregisterEvent(player));
                     plugin.logDebug(() -> "PluginMessageEvent | Forced Unregister type, player " + name);
                 }
 
@@ -136,7 +130,7 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
         return false;
     }
 
-    private void createServerConnectionRequest(final Player player, final ServerConnection connection){
+    private void createServerConnectionRequest(final Player player, final ServerConnection connection) {
         final RegisteredServer loginServer = player.getCurrentServer().orElse(connection).getServer();
 
         final ProxyConfiguration config = plugin.config().get();
@@ -157,21 +151,14 @@ public final class PluginMessageListener implements Listener<PluginMessageEvent>
             plugin.logDebug(() -> "PluginMessageEvent # createServerConnectionRequest | The player does not have permission " + player.getUsername());
             return;
         }
-
-        eventManager.fire(new PreSendOnLoginEvent(player, loginServer, toSend.object()))
-                .thenAccept(event -> {
-                    if (!event.getResult().isAllowed()) {
-                        return;
+        player.createConnectionRequest(loginServer)
+                .connect()
+                .thenAccept(result -> {
+                    if (!result.isSuccessful()) {
+                        logger.info("Unable to connect the player {} to the server {}",
+                                player.getUsername(),
+                                result.getAttemptedConnection().getServerInfo().getName());
                     }
-                    player.createConnectionRequest(event.getResult().getServer())
-                            .connect()
-                            .thenAccept(result -> {
-                                if (!result.isSuccessful()) {
-                                    logger.info("Unable to connect the player {} to the server {}",
-                                            player.getUsername(),
-                                            result.getAttemptedConnection().getServerInfo().getName());
-                                }
-                            });
                 });
     }
 }
