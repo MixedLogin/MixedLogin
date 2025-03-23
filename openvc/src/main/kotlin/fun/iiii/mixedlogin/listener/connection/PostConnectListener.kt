@@ -4,36 +4,33 @@ import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.player.ServerPostConnectEvent
-import com.velocitypowered.api.proxy.Player
-import com.velocitypowered.api.proxy.ServerConnection
-import com.velocitypowered.api.proxy.server.RegisteredServer
 import `fun`.iiii.mixedlogin.MixedLoginMain
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.listener.Listener
 
 @Suppress("UnstableApiUsage")
 class PostConnectListener @Inject constructor(
-    private val plugin: AuthMeVelocityPlugin,
+    private val authMeManager: AuthMeManager,
     private val eventManager: EventManager,
-    private val mixedLoginMain: MixedLoginMain
+    private val plugin: MixedLoginMain
 ) : Listener<ServerPostConnectEvent> {
 
     override fun register() {
-        eventManager.register(mixedLoginMain, ServerPostConnectEvent::class.java, this)
+        eventManager.register(plugin, ServerPostConnectEvent::class.java, this)
     }
 
     override fun executeAsync(event: ServerPostConnectEvent): EventTask {
         return EventTask.async {
             val player = event.player
 
-            val isLogged = plugin.isLogged(player)
+            val isLogged = authMeManager.isLogged(player)
             plugin.logDebug { "ServerPostConnectEvent | Player ${player.username} is logged: $isLogged" }
             val server = player.currentServer.map { it.server }.orElse(null)
             if (server == null) {
                 plugin.logDebug("ServerPostConnectEvent | Player ${player.username} is not in a server")
                 return@async
             }
-            val isInAuthServer = plugin.isInAuthServer(player)
+            val isInAuthServer = authMeManager.isInAuthServer(player)
             plugin.logDebug("ServerPostConnectEvent | Player ${player.username} is in AuthServer: $isInAuthServer")
 
             if (!(isLogged && isInAuthServer)) {
@@ -41,7 +38,7 @@ class PostConnectListener @Inject constructor(
             }
 
             plugin.logDebug("ServerPostConnectEvent | Already logged player and connected to an Auth server")
-            val messageResult = server.sendPluginMessage(AuthMeVelocityPlugin.MODERN_CHANNEL) { encoder ->
+            val messageResult = server.sendPluginMessage(AuthMeManager.MODERN_CHANNEL) { encoder ->
                 plugin.logDebug { "ServerPostConnectEvent | ${player.username} | Encoding LOGIN data" }
                 encoder.writeUTF("LOGIN")
                 encoder.writeUTF(player.username)

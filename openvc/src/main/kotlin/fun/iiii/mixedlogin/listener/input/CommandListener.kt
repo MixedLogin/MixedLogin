@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.command.CommandExecuteEvent
 import com.velocitypowered.api.proxy.Player
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.MixedLoginMain
 import `fun`.iiii.mixedlogin.listener.Listener
 import `fun`.iiii.mixedlogin.utils.AuthMeUtils
@@ -14,12 +14,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 
 class CommandListener @Inject constructor(
     private val eventManager: EventManager,
-    private val plugin: AuthMeVelocityPlugin,
-    private val mixedLoginMain: MixedLoginMain
+    private val authMeManager: AuthMeManager,
+    private val plugin: MixedLoginMain
 ) : Listener<CommandExecuteEvent> {
 
     override fun register() {
-        eventManager.register(mixedLoginMain, CommandExecuteEvent::class.java, PostOrder.FIRST, this)
+        eventManager.register(plugin, CommandExecuteEvent::class.java, PostOrder.FIRST, this)
     }
 
     override fun executeAsync(event: CommandExecuteEvent): EventTask {
@@ -30,13 +30,13 @@ class CommandListener @Inject constructor(
                 return@withContinuation
             }
 
-            if (plugin.isLogged(player)) {
+            if (authMeManager.isLogged(player)) {
                 plugin.logDebug { "CommandExecuteEvent | Player ${player.username} is already logged" }
                 continuation.resume()
                 return@withContinuation
             }
 
-            if (plugin.isInAuthServer(player)) {
+            if (authMeManager.isInAuthServer(player)) {
                 plugin.logDebug { "CommandExecuteEvent | Player ${player.username} is in Auth Server" }
                 val command = AuthMeUtils.getFirstArgument(event.command)
                 if (!MixedLoginMain.getConfig().commands.allowedCommands.contains(command)) {

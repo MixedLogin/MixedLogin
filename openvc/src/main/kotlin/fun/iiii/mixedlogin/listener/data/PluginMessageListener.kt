@@ -1,6 +1,5 @@
 package `fun`.iiii.mixedlogin.listener.data
 
-import com.google.common.io.ByteArrayDataInput
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.EventTask
@@ -8,11 +7,9 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.api.proxy.ServerConnection
-import com.velocitypowered.api.proxy.server.RegisteredServer
 import `fun`.iiii.mixedlogin.MixedLoginMain
-import `fun`.iiii.mixedlogin.config.MixedLoginConfig
 import `fun`.iiii.mixedlogin.MessageType
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.listener.Listener
 import `fun`.iiii.mixedlogin.utils.AuthMeUtils
 import net.kyori.adventure.util.Index
@@ -23,8 +20,8 @@ class PluginMessageListener @Inject constructor(
     private val proxy: ProxyServer,
     private val eventManager: EventManager,
     private val logger: Logger,
-    private val plugin: AuthMeVelocityPlugin,
-    private val mixedLoginMain: MixedLoginMain
+    private val authMeManager: AuthMeManager,
+    private val plugin: MixedLoginMain
 ) : Listener<PluginMessageEvent> {
 
     companion object {
@@ -32,7 +29,7 @@ class PluginMessageListener @Inject constructor(
     }
 
     override fun register() {
-        eventManager.register(mixedLoginMain, PluginMessageEvent::class.java, this)
+        eventManager.register(plugin, PluginMessageEvent::class.java, this)
     }
 
     override fun executeAsync(event: PluginMessageEvent): EventTask {
@@ -61,7 +58,7 @@ class PluginMessageListener @Inject constructor(
             when (type) {
                 MessageType.LOGIN -> {
                     plugin.logDebug("PluginMessageEvent | Login type")
-                    if (player != null && plugin.addPlayer(player)) {
+                    if (player != null && authMeManager.addPlayer(player)) {
                         if (MixedLoginMain.getConfig().sendOnLogin.enable) {
                             createServerConnectionRequest(player, connection)
                         }
@@ -71,7 +68,7 @@ class PluginMessageListener @Inject constructor(
 
                 MessageType.LOGOUT -> {
                     plugin.logDebug("PluginMessageEvent | Logout type")
-                    if (player != null && plugin.removePlayer(player)) {
+                    if (player != null && authMeManager.removePlayer(player)) {
                         plugin.logDebug { "PluginMessageEvent | Player $name not null" }
                     }
                 }
@@ -103,7 +100,7 @@ class PluginMessageListener @Inject constructor(
             return true
         }
         val identifier = event.identifier
-        if (!(identifier == AuthMeVelocityPlugin.MODERN_CHANNEL || identifier == AuthMeVelocityPlugin.LEGACY_CHANNEL)) {
+        if (!(identifier == AuthMeManager.MODERN_CHANNEL || identifier == AuthMeManager.LEGACY_CHANNEL)) {
             plugin.logDebug { "PluginMessageEvent | Not AuthMeVelocity Identifier: ${identifier.id}" }
             return true
         }

@@ -5,18 +5,18 @@ import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.connection.DisconnectEvent
 import `fun`.iiii.mixedlogin.MixedLoginMain
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.listener.Listener
 import org.checkerframework.checker.nullness.qual.Nullable
 
 class DisconnectListener @Inject constructor(
-    private val plugin: AuthMeVelocityPlugin,
+    private val authMeManager: AuthMeManager,
     private val eventManager: EventManager,
-    private val mixedLoginMain: MixedLoginMain
+    private val plugin: MixedLoginMain
 ) : Listener<DisconnectEvent> {
 
     override fun register() {
-        eventManager.register(mixedLoginMain, DisconnectEvent::class.java, this)
+        eventManager.register(plugin, DisconnectEvent::class.java, this)
     }
 
     override fun executeAsync(event: DisconnectEvent): @Nullable EventTask? {
@@ -24,6 +24,6 @@ class DisconnectListener @Inject constructor(
             return null
         }
 
-        return EventTask.async { plugin.removePlayer(event.player) }
+        return EventTask.async { authMeManager.removePlayer(event.player) }
     }
 } 

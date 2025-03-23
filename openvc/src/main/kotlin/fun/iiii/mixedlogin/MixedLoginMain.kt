@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.ProxyServer
 import `fun`.iiii.mixedlogin.command.MixedLoginCommand
 import `fun`.iiii.mixedlogin.config.MixedLoginConfig
 import `fun`.iiii.mixedlogin.listener.EventListener
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
@@ -16,6 +17,7 @@ import org.spongepowered.configurate.kotlin.dataClassFieldDiscoverer
 import org.spongepowered.configurate.objectmapping.ObjectMapper
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.function.Supplier
 import java.util.logging.Logger
 
 class MixedLoginMain @Inject constructor(
@@ -29,7 +31,7 @@ class MixedLoginMain @Inject constructor(
     companion object {
         private lateinit var instance: MixedLoginMain
         private lateinit var mixedLoginConfig: MixedLoginConfig
-        private lateinit var authMeVelocityPlugin: AuthMeVelocityPlugin
+        private lateinit var authMeManager: AuthMeManager
 
         @JvmStatic
         fun getInstance(): MixedLoginMain = instance
@@ -51,8 +53,8 @@ class MixedLoginMain @Inject constructor(
         proxy.eventManager.register(this, EventListener())
         loginServerManager.start()
 
-        authMeVelocityPlugin = AuthMeVelocityPlugin(ComponentLogger.logger())
-        authMeVelocityPlugin.onProxyInitialization(injector, server)
+        authMeManager = AuthMeManager(ComponentLogger.logger())
+        authMeManager.onProxyInitialization(injector, server)
 
     }
 
@@ -87,6 +89,19 @@ class MixedLoginMain @Inject constructor(
         }
         if (config != null) {
             mixedLoginConfig = config
+        }
+    }
+
+
+    fun logDebug(msg: String) {
+        if (mixedLoginConfig.advanced.debug) {
+            logger.info("[DEBUG] $msg")
+        }
+    }
+
+    fun logDebug(msg: Supplier<String>) {
+        if (mixedLoginConfig.advanced.debug) {
+            logger.info("[DEBUG] ${msg.get()}")
         }
     }
 

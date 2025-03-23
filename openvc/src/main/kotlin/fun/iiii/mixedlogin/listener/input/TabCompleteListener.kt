@@ -6,22 +6,22 @@ import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.player.TabCompleteEvent
 import `fun`.iiii.mixedlogin.MixedLoginMain
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.listener.Listener
 
 class TabCompleteListener @Inject constructor(
-    private val plugin: AuthMeVelocityPlugin,
+    private val authMeManager: AuthMeManager,
     private val eventManager: EventManager,
-    private val mixedLoginMain: MixedLoginMain
+    private val plugin: MixedLoginMain
 ) : Listener<TabCompleteEvent> {
 
     override fun register() {
-        eventManager.register(mixedLoginMain, TabCompleteEvent::class.java, PostOrder.FIRST, this)
+        eventManager.register(plugin, TabCompleteEvent::class.java, PostOrder.FIRST, this)
     }
 
     override fun executeAsync(event: TabCompleteEvent): EventTask {
         return EventTask.async {
-            if (plugin.isLogged(event.player)) {
+            if (authMeManager.isLogged(event.player)) {
                 plugin.logDebug("TabCompleteEvent | Player ${event.player.username} is already logged")
                 return@async
             }

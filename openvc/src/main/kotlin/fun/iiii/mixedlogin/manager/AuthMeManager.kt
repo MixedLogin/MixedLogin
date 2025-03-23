@@ -1,4 +1,4 @@
-package `fun`.iiii.mixedlogin
+package `fun`.iiii.mixedlogin.manager
 
 import com.google.inject.Binder
 import com.google.inject.Injector
@@ -10,8 +10,7 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier
 import com.velocitypowered.api.proxy.server.RegisteredServer
-import com.velocitypowered.api.util.ModInfo.Mod
-import `fun`.iiii.mixedlogin.config.MixedLoginConfig
+import `fun`.iiii.mixedlogin.MixedLoginMain
 import `fun`.iiii.mixedlogin.listener.Listener
 import `fun`.iiii.mixedlogin.listener.connection.DisconnectListener
 import `fun`.iiii.mixedlogin.listener.connection.InitialServerListener
@@ -28,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 import java.util.stream.Stream
 
-class AuthMeVelocityPlugin(
+class AuthMeManager(
     private val logger: ComponentLogger
 ) {
     companion object {
@@ -47,13 +46,11 @@ class AuthMeVelocityPlugin(
             return
         }
 
-        logDebug("Loaded plugin libraries")
-
         proxy.channelRegistrar.register(MODERN_CHANNEL, LEGACY_CHANNEL)
 
         val childInjector = injector.createChildInjector(object : Module {
             override fun configure(binder: Binder) {
-                binder.bind(AuthMeVelocityPlugin::class.java).toInstance(this@AuthMeVelocityPlugin)
+                binder.bind(AuthMeManager::class.java).toInstance(this@AuthMeManager)
             }
         })
 
@@ -101,15 +98,4 @@ class AuthMeVelocityPlugin(
 
     fun isAuthServer(server: String): Boolean = authServers.contains(server)
 
-    fun logDebug(msg: String) {
-        if (MixedLoginMain.getConfig().advanced.debug) {
-            logger.info("[DEBUG] {}", msg)
-        }
-    }
-
-    fun logDebug(msg: Supplier<String>) {
-        if (MixedLoginMain.getConfig().advanced.debug) {
-            logger.info("[DEBUG] {}", msg.get())
-        }
-    }
 }

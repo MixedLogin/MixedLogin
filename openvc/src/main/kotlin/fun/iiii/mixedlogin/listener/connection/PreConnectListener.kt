@@ -4,32 +4,30 @@ import com.google.inject.Inject
 import com.velocitypowered.api.event.EventManager
 import com.velocitypowered.api.event.EventTask
 import com.velocitypowered.api.event.player.ServerPreConnectEvent
-import com.velocitypowered.api.proxy.server.RegisteredServer
 import `fun`.iiii.mixedlogin.MixedLoginMain
-import `fun`.iiii.mixedlogin.config.MixedLoginConfig
-import `fun`.iiii.mixedlogin.AuthMeVelocityPlugin
+import `fun`.iiii.mixedlogin.manager.AuthMeManager
 import `fun`.iiii.mixedlogin.listener.Listener
 
 class PreConnectListener @Inject constructor(
-    private val plugin: AuthMeVelocityPlugin,
+    private val authMeManager: AuthMeManager,
     private val eventManager: EventManager,
-    private val mixedLoginMain: MixedLoginMain
+    private val plugin: MixedLoginMain
 ) : Listener<ServerPreConnectEvent> {
 
     override fun register() {
-        eventManager.register(mixedLoginMain, ServerPreConnectEvent::class.java, this)
+        eventManager.register(plugin, ServerPreConnectEvent::class.java, this)
     }
 
     override fun executeAsync(event: ServerPreConnectEvent): EventTask {
         return EventTask.withContinuation { continuation ->
             val config = MixedLoginMain.getConfig()
             if (config.advanced.skipOnlineLogin && event.player.isOnlineMode) {
-                plugin.addPlayer(event.player)
+                authMeManager.addPlayer(event.player)
                 plugin.logDebug { "ServerPreConnectEvent | Player ${event.player.username} is online" }
                 continuation.resume()
                 return@withContinuation
             }
-            if (plugin.isLogged(event.player)) {
+            if (authMeManager.isLogged(event.player)) {
                 plugin.logDebug { "ServerPreConnectEvent | Player ${event.player.username} is already logged" }
                 continuation.resume()
                 return@withContinuation
@@ -42,7 +40,7 @@ class PreConnectListener @Inject constructor(
                 return@withContinuation
             }
             // this should be present, "event.getResult().isAllowed()" is the "isPresent" check
-            if (!plugin.isAuthServer(server)) {
+            if (!authMeManager.isAuthServer(server)) {
                 plugin.logDebug("ServerPreConnectEvent | Server ${server.serverInfo.name} is not an auth server")
                 event.result = ServerPreConnectEvent.ServerResult.denied()
             } else {
