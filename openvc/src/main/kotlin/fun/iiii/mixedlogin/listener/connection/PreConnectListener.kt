@@ -22,7 +22,7 @@ class PreConnectListener @Inject constructor(
 
     override fun executeAsync(event: ServerPreConnectEvent): EventTask {
         return EventTask.withContinuation { continuation ->
-            val config = plugin.config()
+            val config = MixedLoginMain.getConfig()
             if (config.advanced.skipOnlineLogin && event.player.isOnlineMode) {
                 plugin.addPlayer(event.player)
                 plugin.logDebug { "ServerPreConnectEvent | Player ${event.player.username} is online" }

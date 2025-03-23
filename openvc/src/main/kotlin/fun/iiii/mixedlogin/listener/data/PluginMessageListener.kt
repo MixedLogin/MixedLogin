@@ -62,7 +62,7 @@ class PluginMessageListener @Inject constructor(
                 MessageType.LOGIN -> {
                     plugin.logDebug("PluginMessageEvent | Login type")
                     if (player != null && plugin.addPlayer(player)) {
-                        if (plugin.config().sendOnLogin.enable) {
+                        if (MixedLoginMain.getConfig().sendOnLogin.enable) {
                             createServerConnectionRequest(player, connection)
                         }
                         plugin.logDebug("PluginMessageEvent | Player not null")
@@ -113,7 +113,7 @@ class PluginMessageListener @Inject constructor(
     private fun createServerConnectionRequest(player: Player, connection: ServerConnection) {
         val loginServer = player.currentServer.orElse(connection).server
 
-        val config = plugin.config()
+        val config = MixedLoginMain.getConfig()
 
         val toSend = AuthMeUtils.serverToSend(
             config.sendOnLogin.sendMode,
@@ -131,7 +131,7 @@ class PluginMessageListener @Inject constructor(
             return
         }
 
-        if (plugin.config().sendOnLogin.requirePermission && !player.hasPermission("authmevelocity.send-on-login")) {
+        if (MixedLoginMain.getConfig().sendOnLogin.requirePermission && !player.hasPermission("authmevelocity.send-on-login")) {
             plugin.logDebug { "PluginMessageEvent # createServerConnectionRequest | The player does not have permission ${player.username}" }
             return
         }

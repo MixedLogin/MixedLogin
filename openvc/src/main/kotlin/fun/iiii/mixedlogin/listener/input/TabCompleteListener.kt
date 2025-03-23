@@ -27,7 +27,7 @@ class TabCompleteListener @Inject constructor(
             }
 
             val command = event.partialMessage
-            for (allowed in plugin.config().commands.allowedCommands) {
+            for (allowed in MixedLoginMain.getConfig().commands.allowedCommands) {
                 if (allowed.startsWith(command)) {
                     return@async
                 }

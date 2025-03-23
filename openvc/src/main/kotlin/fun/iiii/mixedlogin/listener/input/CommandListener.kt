@@ -39,7 +39,7 @@ class CommandListener @Inject constructor(
             if (plugin.isInAuthServer(player)) {
                 plugin.logDebug { "CommandExecuteEvent | Player ${player.username} is in Auth Server" }
                 val command = AuthMeUtils.getFirstArgument(event.command)
-                if (!plugin.config().commands.allowedCommands.contains(command)) {
+                if (!MixedLoginMain.getConfig().commands.allowedCommands.contains(command)) {
                     plugin.logDebug { "CommandExecuteEvent | Player ${player.username} executed an blocked command" }
                     sendBlockedMessage(player)
                     event.result=CommandExecuteEvent.CommandResult.denied()
@@ -54,7 +54,7 @@ class CommandListener @Inject constructor(
     }
 
     private fun sendBlockedMessage(player: Player) {
-        val blockedMessage = plugin.config().commands.blockedMessage
+        val blockedMessage = MixedLoginMain.getConfig().commands.blockedMessage
         if (!blockedMessage.isBlank()) {
             player.sendMessage(MiniMessage.miniMessage().deserialize(blockedMessage))
         }

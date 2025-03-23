@@ -51,8 +51,8 @@ class MixedLoginMain @Inject constructor(
         proxy.eventManager.register(this, EventListener())
         loginServerManager.start()
 
-        authMeVelocityPlugin = AuthMeVelocityPlugin(server, ComponentLogger.logger(), injector)
-        authMeVelocityPlugin.onProxyInitialization(mixedLoginConfig)
+        authMeVelocityPlugin = AuthMeVelocityPlugin(ComponentLogger.logger())
+        authMeVelocityPlugin.onProxyInitialization(injector, server)
 
     }
 

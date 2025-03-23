@@ -28,7 +28,7 @@ class InitialServerListener @Inject constructor(
 
     override fun executeAsync(event: PlayerChooseInitialServerEvent): EventTask {
         return EventTask.withContinuation { continuation ->
-            val config = plugin.config()
+            val config = MixedLoginMain.getConfig()
             if (!config.sendNoLogin.enable) {
                 continuation.resume()
                 plugin.logDebug("PlayerChooseInitialServerEvent | Not enabled")
